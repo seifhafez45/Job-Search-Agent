@@ -1,103 +1,120 @@
 # Personal Job Search & Application Agent
 
-A conversational assistant that helps a job seeker through the entire job
-search process: turning a CV into a structured profile, finding relevant
-openings, spotting skill gaps, tailoring applications, preparing for
-interviews, and keeping the whole search organized.
+A conversational assistant that supports a job seeker end-to-end: CV → structured
+profile → job search → skill-gap analysis → tailored applications → interview prep →
+organized tracking.
 
 ## Design principle
 
-This system deliberately uses **five different approaches**, chosen per
-task rather than defaulting to "add more AI":
+Every feature uses the **simplest technology that actually fits the task** — not the
+flashiest one. Five approaches are mixed deliberately:
 
-| Approach | Used for | Where in the repo |
+| Approach | Used for | Where |
 |---|---|---|
-| **Normal LLM** | CV extraction, skill-gap comparison, resume/cover-letter tailoring | `llm/` |
-| **RAG** | Career-resource Q&A ("what should I study for X?") | `rag/` |
-| **Agent** | Interview-prep planner (adaptive day-by-day schedule, scoring, branching, nudges) | `agent/` |
-| **Memory** | Persistent user profile, skill-gap history, practice history | `memory/` |
-| **Normal software** | Job search filters, application tracker, reminders, auth | `job_search/`, `application_tracker/`, `auth/` |
+| **Normal LLM** | Reasoning/writing on info already at hand | `cv_extraction/`, `skill_gap/`, `tailoring/` |
+| **RAG** | Answers depending on external, changing content | `career_rag/` (Phase 5), `job_rag/` (Phase 7 stretch) |
+| **Agent** | Multi-step planning + runtime branching | `interview_agent/` (the one agent in the system) |
+| **Memory** | Persistent facts about the user | `memory/` |
+| **Normal software** | Plain infra, no AI needed | `auth/`, `job_search/`, `application_tracker/`, `storage/` |
 
-There is exactly **one agent** in this system (the interview-prep
-planner). Everything that doesn't need multi-step runtime branching is
-deliberately implemented as a simpler, cheaper, more predictable
-component.
+Only **one** agent exists in this system — the interview-prep planner. Everything
+that can be a plain LLM call or plain code deliberately is one, instead of being
+wrapped in agent machinery it doesn't need.
 
-## Repository layout
+## Repository structure
 
 ```
-job_search_agent/
-├── config/                # App configuration (env vars → typed settings)
-├── database/              # Schema (SQL + ORM) and connection management
-├── auth/                  # Password hashing, JWT, register/login logic
-├── storage/                # Resume / generated-file storage on disk
-├── memory/                 # Persistent user memory: schemas + read/write layer
-├── llm/                    # "Normal LLM" tasks
-│   ├── llm_client.py        #   single point of contact with the model provider
-│   ├── cv_extraction.py     #   CV text → structured profile (Phase 2)
-│   ├── skill_gap_analyzer.py#   profile vs. posting comparison (Phase 4)
-│   ├── resume_tailor.py     #   resume bullet rewriting (Phase 4)
-│   ├── cover_letter_generator.py
-│   └── prompts/             #   every prompt template lives here, nowhere else
-├── job_search/              # Phase 3: structured search against a live job API
-├── rag/                     # Phase 5: career-resource RAG
-│   ├── ingestion/            #   scrape + chunk
-│   ├── embedding_service.py  #   text → vector
-│   ├── vector_store.py       #   vector storage/query
-│   └── retrieval_service.py  #   retrieval + grounded answer generation
-├── agent/                   # Phase 6: the ONE agent — interview-prep planner
-│   ├── planner.py             #   plan structure + adaptive sequencing
-│   ├── mock_qna_scorer.py     #   scores a single mock answer
-│   ├── nudge_engine.py        #   decides when to nudge the user
-│   ├── agent_state.py         #   state object passed between the above
-│   └── interview_prep_agent.py#   public entry point tying it together
-├── application_tracker/     # Plain CRUD: applications + reminders
-├── conversational/          # Intent classification + dispatch to the right module
-├── api/                     # FastAPI app; routes are thin — logic lives upstream
-├── utils/                   # Cross-cutting helpers (logging, file-type validation)
-└── tests/                   # One test file per module under test
+job-search-agent/
+├── app/
+│   ├── main.py                 # FastAPI app assembly only — mounts routers
+│   ├── config.py                # Single source of settings (env vars)
+│   ├── database.py              # DB engine/session setup only
+│   │
+│   ├── models/                  # SQLAlchemy tables (Phase 1 — the foundation)
+│   ├── schemas/                 # Pydantic request/response contracts (API shape, decoupled from DB)
+│   ├── common/                  # Cross-cutting: exceptions, logging, shared dependencies
+│   │
+│   ├── auth/                    # Normal software — signup/login/JWT
+│   ├── storage/                 # Normal software — raw resume file storage
+│   ├── memory/                  # Memory pillar — assembles persistent user context
+│   ├── llm/                     # Shared LLM client — every "Normal LLM" module uses this
+│   │
+│   ├── cv_extraction/           # Normal LLM — Phase 2: resume file → structured profile
+│   ├── job_search/              # Normal software — Phase 3: structured job API search
+│   ├── skill_gap/               # Normal LLM — Phase 4a: CV vs. posting comparison
+│   ├── tailoring/                # Normal LLM — Phase 4b: resume bullets + cover letters
+│   ├── career_rag/              # RAG — Phase 5: scrape/embed/retrieve study resources
+│   ├── interview_agent/         # Agent — Phase 6: adaptive day-by-day interview prep
+│   ├── application_tracker/     # Normal software — Phase 1/7: CRUD + stale-application nudges
+│   └── job_rag/                 # RAG (stretch) — Phase 7: semantic/loose job search
+│
+├── migrations/                  # Alembic migrations (schema changes over time)
+├── scripts/                     # One-off/batch jobs: seed_db.py, ingest_career_resources.py
+├── tests/                       # One test file per feature module, mirrors app/ 1:1
+├── frontend/                    # Placeholder — point any client at the API (see frontend/README.md)
+│
+├── requirements.txt
+├── .env.example
+├── docker-compose.yml
+├── Dockerfile
+└── alembic.ini
 ```
 
-### One responsibility per file
+### Module rules (why nothing overlaps)
 
-Every file's docstring states what it **solely owns** and which
-neighboring file owns the related concern it does *not* handle (e.g.
-`llm/cv_extraction.py` calls `llm/llm_client.py` for the actual API call,
-`llm/prompts/cv_extraction_prompt.py` for what to say, and
-`memory/memory_store.py` to persist the result — it does none of those
-three things itself). This is intentional: it's what let a 5-person team
-build in parallel without merge conflicts (see the division of work
-below, provided separately).
+- Every feature folder has **one router.py** (HTTP only) and **one service.py**
+  (orchestration only). Routers never contain business logic; services never
+  touch `Request`/`Response` objects.
+- **`models/`** = database shape. **`schemas/`** = API shape. They are never the
+  same file, so a schema change doesn't force a migration and vice versa.
+- Anything that calls the LLM imports `complete()` from **`llm/client.py`** —
+  no feature module instantiates its own Anthropic client.
+- Anything that needs persistent facts about the user calls
+  **`memory/memory_store.py`** — no feature module hand-rolls its own multi-table
+  join for "what do we know about this user."
+- `career_rag/` and `job_rag/` both use the shared `vector_store.py` machinery
+  from `career_rag/`, just with different collection names — the Chroma wrapper
+  itself is written once.
+- File parsing (`cv_extraction/parser.py`) is separate from file storage
+  (`storage/resume_storage.py`) is separate from LLM interpretation
+  (`cv_extraction/service.py`) — three distinct concerns, three distinct files.
 
 ## Setup
 
 ```bash
-python -m venv venv
-source venv/bin/activate
+cp .env.example .env          # fill in ANTHROPIC_API_KEY, DATABASE_URL, etc.
 pip install -r requirements.txt
 
-cp .env.example .env   # fill in your real keys
+# Option A: quick local dev (no migration history)
+python -m scripts.seed_db
 
-python -c "from database.db import init_db; init_db()"
+# Option B: proper migrations
+alembic revision --autogenerate -m "init"
+alembic upgrade head
 
-uvicorn api.main:app --reload
+uvicorn app.main:app --reload
 ```
 
-## Build order (matches the project's phased plan)
+Or via Docker:
 
-1. **Foundations** — `database/`, `auth/`, `storage/`
-2. **Core pipeline** — `llm/cv_extraction.py` → `memory/`
+```bash
+docker-compose up --build
+```
+
+API docs are auto-generated at `http://localhost:8000/docs`.
+
+## Build order (matches the phases)
+
+1. **Foundations** — `models/`, `auth/`, `storage/`
+2. **Core pipeline** — `cv_extraction/` → `memory/`
 3. **Structured search** — `job_search/`
-4. **Skill-gap + tailoring** — `llm/skill_gap_analyzer.py`, `llm/resume_tailor.py`, `llm/cover_letter_generator.py`
-5. **Career-resource RAG** — `rag/`
-6. **Interview-prep Agent** — `agent/`
-7. **Stretch** — semantic job search RAG, stale-application nudges, salary/market insights (not yet implemented — natural extension points are `rag/` and `application_tracker/`)
+4. **Skill-gap + tailoring** — `skill_gap/`, `tailoring/`
+5. **Career-resource RAG** — `career_rag/`
+6. **Interview-prep Agent** — `interview_agent/` (depends on 2, 4, 5)
+7. **Stretch** — `job_rag/`, `application_tracker/reminders.py`, market-insight summaries
 
-## Notes on this scaffold
+## Running tests
 
-This repo is a structural scaffold: every file is real, importable Python
-with correct responsibilities, signatures, and cross-module wiring, but
-some bodies are simplified (e.g. a single job-API provider, a basic
-intent classifier) so the **architecture** — not incidental provider
-details — is what stands out. Swapping providers, adding providers, or
-hardening any single piece touches exactly one file, by design.
+```bash
+pytest tests/ -v
+```
