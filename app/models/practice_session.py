@@ -16,6 +16,7 @@ class PracticeSession(Base):
     target_role = Column(String)
     plan_json = Column(Text)  # the day-by-day plan produced by the agent
     current_day = Column(Integer, default=1)
+    current_day_attempts = Column(Integer, default=0)  # resets to 0 on advance; caps repeat_topic loops
     status = Column(String, default="active")  # active | completed | abandoned
     created_at = Column(DateTime, server_default=func.now())
 

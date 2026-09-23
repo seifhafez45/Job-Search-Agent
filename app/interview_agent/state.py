@@ -14,6 +14,8 @@ from app.interview_agent.tools import generate_question, save_answer
 from app.interview_agent.scorer import score_answer
 from app.interview_agent.nudge import decide_next_action
 
+MAX_ATTEMPTS_PER_DAY = 3  # forces advance past a stuck 'repeat_topic' loop (e.g. a scoring bug)
+
 
 def start_session(db: Session, user_id: int, target_role: str, days: int) -> PracticeSession:
     plan = build_plan(db, user_id, target_role, days)
@@ -32,17 +34,26 @@ def get_next_question(db: Session, session: PracticeSession) -> str:
 
 def submit_answer(db: Session, session: PracticeSession, day_number: int, question: str, user_answer: str) -> dict:
     result = score_answer(question, user_answer)
+    # Capture recent_scores BEFORE saving this answer, so decide_next_action's
+    # (recent_scores + [score]) doesn't double-count the answer being scored now.
+    recent_scores = [a.score for a in session.answers[-3:]]
     save_answer(db, session.id, day_number, question, user_answer, result["score"], result["feedback"])
 
-    recent_scores = [a.score for a in session.answers[-3:]]
     next_action = decide_next_action(result["score"], recent_scores)
+
+    if next_action in ("repeat_topic", "nudge_break"):
+        session.current_day_attempts += 1
+        if session.current_day_attempts >= MAX_ATTEMPTS_PER_DAY:
+            next_action = "advance"
 
     if next_action == "advance":
         plan = json.loads(session.plan_json)
+        session.current_day_attempts = 0
         if session.current_day < len(plan["days"]):
             session.current_day += 1
         else:
             session.status = "completed"
-        db.commit()
+
+    db.commit()
 
     return {**result, "next_action": next_action}
