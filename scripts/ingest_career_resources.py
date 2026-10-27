@@ -43,9 +43,19 @@ SOURCES = [
 
 
 def main():
+    failures = []
     for url, topic in SOURCES:
-        count = ingest_url(url, topic)
-        print(f"Ingested {count} chunks from {url} [{topic}]")
+        try:
+            count = ingest_url(url, topic)
+            print(f"Ingested {count} chunks from {url} [{topic}]")
+        except Exception as e:
+            print(f"FAILED {url} [{topic}]: {e}")
+            failures.append((url, topic))
+
+    if failures:
+        print(f"\n{len(failures)} source(s) failed to ingest:")
+        for url, topic in failures:
+            print(f"  - {url} [{topic}]")
 
 
 if __name__ == "__main__":
