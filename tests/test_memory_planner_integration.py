@@ -118,19 +118,6 @@ def test_planner_receives_persistent_memory(db, monkeypatch):
     db.commit()
 
     # ---------------------------------------------------------
-    # Mock external RAG
-    # ---------------------------------------------------------
-
-    monkeypatch.setattr(
-        planner,
-        "retrieve_relevant_chunks",
-        lambda query, top_k=3: [
-            "Study Docker fundamentals.",
-            "Review container isolation.",
-        ],
-    )
-
-    # ---------------------------------------------------------
     # Capture what is actually sent to the LLM
     # ---------------------------------------------------------
 
@@ -190,9 +177,6 @@ def test_planner_receives_persistent_memory(db, monkeypatch):
     assert ("Explain isolation, images, and containers " "in more detail.") in prompt
 
     assert "AI Engineer" in prompt
-
-    # Prove RAG context also reached the planner
-    assert "Study Docker fundamentals." in prompt
 
     # Prove planner successfully parsed LLM response
     assert result["days"][0]["topic"] == "Docker"

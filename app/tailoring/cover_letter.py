@@ -1,9 +1,11 @@
 """Cover letter generation ONLY."""
 from app.llm.client import complete
 import requests
-from app.tailoring.prompts import COVER_LETTER_SYSTEM_PROMPT , RESEARCH_COMPANY_SYSTEM_PROMPT,DRAFT_SYSTEM_PROMPT,CRITIQUE_SYSTEM_PROMPT="You are a strict hiring manager and fact-checker. Respond with a JSON object only.",
+from app.tailoring.prompts import COVER_LETTER_SYSTEM_PROMPT, RESEARCH_COMPANY_SYSTEM_PROMPT, DRAFT_SYSTEM_PROMPT
 import json
-import app.config.settings as settings
+from app.config import settings
+
+CRITIQUE_SYSTEM_PROMPT = "You are a strict hiring manager and fact-checker. Respond with a JSON object only."
 
 
 def _web_search(query: str, n: int = 4) -> list[dict]:
@@ -78,10 +80,7 @@ def critique_cover_letter(letter, job_title, company, job_description,
             'Return JSON: {"score": <int>, "issues": [<specific actionable strings>], '
             '"unsupported_claims": [<strings>]}'
         )
-    raw = complete(CRITIQUE_SYSTEM_PROMPT,
-,user_prompt
-        max_tokens=600,
-    )
+    raw = complete(CRITIQUE_SYSTEM_PROMPT, user_prompt, max_tokens=600)
     try:
         result = json.loads(raw)
         result["score"] = int(result.get("score", 0))
