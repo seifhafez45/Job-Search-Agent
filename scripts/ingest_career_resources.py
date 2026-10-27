@@ -7,7 +7,7 @@ from app.career_rag.ingestion import ingest_url
 
 SOURCES = [
     # --- Tech ---
-    ("https://medium.com/@iammanolov98/mastering-sql-joins-coding-interview-preparation-innerjoin-e96bef58afc2", "sql-fundamentals"),
+    ("https://www.visualcv.com/sql-join-interview-questions/", "sql-fundamentals"),
     ("https://designgurus.io/blog/system-design-interview-guide-for-beginners", "system-design"),
     ("https://www.datacamp.com/tutorial/docker-tutorial", "docker"),
     ("https://algocademy.com/blog/?p=609", "data-structures-algorithms"),
@@ -28,7 +28,7 @@ SOURCES = [
     ("https://www.roberthalf.com/au/en/insights/landing-job/administrative-assistant-interview-questions", "administrative-assistant"),
 
     # --- Healthcare & social services ---
-    ("https://son.rochester.edu/career-planning/nursing-interview-questions.html", "nursing-healthcare"),
+    ("https://hipeople.io/interview-questions/nurse-interview-questions", "nursing-healthcare"),
     ("https://online.yu.edu/wurzweiler/blog/social-work-job-interview-tips", "social-work-counseling"),
 
     # --- Education, design & service roles ---
@@ -38,7 +38,7 @@ SOURCES = [
     ("https://www.hcareers.com/article/career-advice/tips-for-nailing-each-phase-of-a-job-interview", "hospitality-retail"),
 
     # --- Legal ---
-    ("https://www.clio.com/blog/paralegal-interview-questions/", "legal-paralegal"),
+    ("https://huntr.co/interview-questions/paralegal", "legal-paralegal"),
 ]
 
 

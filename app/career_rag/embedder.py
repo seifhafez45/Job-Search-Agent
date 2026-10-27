@@ -16,4 +16,8 @@ def _get_model() -> SentenceTransformer:
 
 
 def embed_text(texts: list[str]) -> list[list[float]]:
-    return _get_model().encode(texts, convert_to_numpy=False).tolist()
+    # Rely on the default convert_to_numpy=True so this always returns a
+    # numpy array (guaranteed to have .tolist()). With convert_to_numpy=False,
+    # some sentence-transformers versions return a plain Python list instead
+    # of an array/tensor, which doesn't have .tolist() and crashes here.
+    return _get_model().encode(texts).tolist()
