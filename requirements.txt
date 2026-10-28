@@ -20,6 +20,7 @@ email-validator==2.2.0
 
 # --- LLM ---
 anthropic==0.34.2
+groq  # optional: only app/llm/groq_client.py (interview_agent + career_rag) uses this; left unpinned, verify a working version on install
 
 # --- RAG (career resources + optional job semantic search) ---
 chromadb==0.5.5

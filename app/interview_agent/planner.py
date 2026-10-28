@@ -16,7 +16,7 @@ import json
 
 from sqlalchemy.orm import Session
 
-from app.llm.client import complete
+from app.llm.groq_client import complete
 from app.memory.context_builder import get_user_memory_context
 from app.interview_agent.prompts import PLAN_GENERATION_PROMPT
 

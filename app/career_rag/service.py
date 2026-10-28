@@ -2,7 +2,7 @@
 Orchestrates the RAG answer: retriever.py -> LLM synthesis grounded in retrieved chunks.
 This is the ONLY module that combines retrieval + generation for career resources.
 """
-from app.llm.client import complete
+from app.llm.groq_client import complete
 from app.llm.base_prompts import GROUNDING_RULE
 from app.career_rag.retriever import retrieve_relevant_chunks
 

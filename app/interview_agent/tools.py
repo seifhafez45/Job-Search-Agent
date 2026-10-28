@@ -8,7 +8,7 @@ import json
 
 from sqlalchemy.orm import Session
 
-from app.llm.client import complete
+from app.llm.groq_client import complete
 from app.models.practice_session import PracticeAnswer
 from app.interview_agent.prompts import QUESTION_GENERATION_PROMPT
 
