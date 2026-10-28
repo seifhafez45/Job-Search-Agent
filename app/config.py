@@ -21,8 +21,9 @@ class Settings(BaseSettings):
     groq_api_key: str = ""
     groq_model: str = ""
 
-    job_api_base_url: str = ""
-    job_api_key: str = ""
+    job_api_base_url: str = "https://api.adzuna.com/v1/api/jobs"
+    job_api_app_id: str = ""
+    job_api_key: str = ""  # Adzuna app_key
 
     vector_db_path: str = "./data/vector_store"
     embedding_model: str = "all-MiniLM-L6-v2"
