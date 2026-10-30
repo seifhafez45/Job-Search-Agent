@@ -1,25 +1,29 @@
-"""HTTP endpoint for skill-gap analysis ONLY."""
-from fastapi import APIRouter, Depends
-from pydantic import BaseModel
-from sqlalchemy.orm import Session
+# ============================================================
+# الملف ده: طبقة الـ HTTP الخاصة بالـ skill_gap (Endpoints)
+#
+# فايدته:
+# - بيستقبل الطلبات من الـ frontend أو من باقي الفريق
+#
+# بيعمل إيه:
+# - POST /skill-gap/analyze: بيستقبل profile + job
+# - بيمرّرهم لـ service.py
+# - بيحوّل الأخطاء لـ HTTP status مناسب (502 لو الـ LLM رجّع رد غلط)
+#
+# ملحوظة: الـ prefix والـ tags بيتحددوا في app/main.py مش هنا.
+# مفيش فيه منطق، شغله استقبال وتمرير وإرجاع بس.
+# ============================================================
+"""HTTP layer for skill-gap analysis. No logic here; delegates to service.py."""
+from fastapi import APIRouter, HTTPException
 
-from app.database import get_db
-from app.common.dependencies import get_current_user
-from app.skill_gap.service import analyze_skill_gap
+from app.schemas.skill_gap import SkillGapRequest, SkillGapResult
+from app.skill_gap.service import SkillGapError, analyze_skill_gap
 
 router = APIRouter()
 
 
-class SkillGapRequest(BaseModel):
-    job_title: str
-    job_description: str
-
-
-@router.post("/analyze")
-def analyze(payload: SkillGapRequest, db: Session = Depends(get_db), user=Depends(get_current_user)):
-    report = analyze_skill_gap(db, user.id, payload.job_title, payload.job_description)
-    return {
-        "matched_skills": report.matched_skills,
-        "missing_skills": report.missing_skills,
-        "fit_summary": report.fit_summary,
-    }
+@router.post("/analyze", response_model=SkillGapResult)
+async def analyze(req: SkillGapRequest) -> SkillGapResult:
+    try:
+        return await analyze_skill_gap(req)
+    except SkillGapError as e:
+        raise HTTPException(status_code=502, detail=str(e))
