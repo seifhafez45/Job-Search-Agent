@@ -13,7 +13,8 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 60
 
     groq_api_key: str
-    llm_model: str = "openai/gpt-oss-120b"
+    llm_model: str = "openai/gpt-oss-20b"
+    tavily_api_key: str
 
     job_api_base_url: str = "https://api.adzuna.com/v1/api/jobs"
     job_api_app_id: str = ""
