@@ -11,7 +11,7 @@ from app.storage.resume_storage import save_resume_file
 
 from app.cv_extraction.parser import extract_text
 from app.cv_extraction.extraction import extract_profile
-from app.cv_extraction.validation import validate_profile_data
+from app.cv_extraction.validation import validate_profile
 
 
 def process_resume_upload(
@@ -31,8 +31,13 @@ def process_resume_upload(
     # 2. Extract structured data using the LLM
     extracted_data = extract_profile(raw_text)
 
-    # 3. Validate extracted data
-    data = validate_profile_data(extracted_data)
+    # 3. Validate extracted data using Pydantic
+    data, errors = validate_profile(extracted_data)
+
+    if errors:
+        raise ExtractionError(
+            f"CV validation failed: {errors}"
+        )
 
     # 4. Save the original resume file
     try:
@@ -41,8 +46,11 @@ def process_resume_upload(
             filename,
             content,
         )
+
     except Exception as e:
-        raise ExtractionError(f"Could not save resume file: {e}")
+        raise ExtractionError(
+            f"Could not save resume file: {e}"
+        )
 
     # 5. Get existing profile or create a new one
     profile = (
