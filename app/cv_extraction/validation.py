@@ -1,4 +1,4 @@
-import re
+from datetime import date
 from typing import Optional
 
 from pydantic import (
@@ -10,20 +10,68 @@ from pydantic import (
 )
 
 
+class WorkExperienceData(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    company: Optional[str] = None
+    title: Optional[str] = None
+    start_date: Optional[date] = None
+    end_date: Optional[date] = None
+    description: Optional[str] = None
+
+
+class EducationData(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    institution: Optional[str] = None
+    degree: Optional[str] = None
+    field_of_study: Optional[str] = None
+    end_date: Optional[date] = None
+
+
+class SkillData(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str
+    proficiency: Optional[str] = None
+
+    @field_validator("name")
+    @classmethod
+    def clean_name(cls, value):
+        value = value.strip()
+
+        if not value:
+            raise ValueError("Skill name cannot be empty.")
+
+        return value
+
+
 class CVProfile(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    name: Optional[str] = None
-    email: Optional[str] = None
-    phone: Optional[str] = None
+    full_name: Optional[str] = None
+    headline: Optional[str] = None
+    summary: Optional[str] = None
+    location: Optional[str] = None
 
-    education: list[str] = Field(default_factory=list)
-    skills: list[str] = Field(default_factory=list)
-    experience: list[str] = Field(default_factory=list)
-    projects: list[str] = Field(default_factory=list)
-    certifications: list[str] = Field(default_factory=list)
+    experiences: list[WorkExperienceData] = Field(
+        default_factory=list
+    )
 
-    @field_validator("name", "email", "phone")
+    education: list[EducationData] = Field(
+        default_factory=list
+    )
+
+    skills: list[SkillData] = Field(
+        default_factory=list
+    )
+
+    @field_validator(
+        "full_name",
+        "headline",
+        "summary",
+        "location",
+    )
     @classmethod
     def clean_optional_text(cls, value):
         if value is None:
@@ -32,43 +80,6 @@ class CVProfile(BaseModel):
         value = value.strip()
 
         return value or None
-
-    @field_validator(
-        "education",
-        "skills",
-        "experience",
-        "projects",
-        "certifications",
-    )
-    @classmethod
-    def clean_lists(cls, values):
-        cleaned = []
-
-        for value in values:
-            if not isinstance(value, str):
-                raise ValueError(
-                    "Each item must be a string."
-                )
-
-            value = value.strip()
-
-            if value:
-                cleaned.append(value)
-
-        return cleaned
-
-    @field_validator("email")
-    @classmethod
-    def validate_email(cls, value):
-        if value is None:
-            return None
-
-        pattern = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
-
-        if not re.match(pattern, value):
-            raise ValueError("Invalid email format.")
-
-        return value
 
 
 def validate_profile(data: dict):
