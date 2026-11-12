@@ -3,7 +3,7 @@ import json
 import logging
 
 import requests
-
+from pydantic import BaseModel, ConfigDict, field_validator
 from app.config import settings
 from app.llm.client import complete
 from app.tailoring.prompts import (
@@ -14,6 +14,21 @@ from app.tailoring.prompts import (
 
 logger = logging.getLogger(__name__)
 
+
+
+class CoverLetterCritique(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    score: int
+    issues: list[str]
+    unsupported_claims: list[str]
+
+    @field_validator("score")
+    @classmethod
+    def validate_score(cls, score: int) -> int:
+        if not 1 <= score <= 10:
+            raise ValueError("Score must be from 1 to 10.")
+        return score
 
 def _web_search(query: str, n: int = 4) -> list[dict]:
     r = requests.post(
@@ -49,7 +64,7 @@ def research_company(company: str, job_title: str) -> str:
                 "news/launches, mission/values, and anything relevant to this role. "
                 "Cite source numbers like [2] after each fact.")
         return complete(RESEARCH_COMPANY_SYSTEM_PROMPT,user_prompt,
-            max_tokens=500,
+            max_tokens=1500,
         ).replace("UNRELIABLE", "")
     except requests.RequestException:
         logger.warning("Company research web search failed for %s", company, exc_info=True)
@@ -69,7 +84,7 @@ def draft_cover_letter(summary, job_title, company, job_description,
             f"Reviewer feedback to address:\n{json.dumps(feedback['issues'], indent=2)}\n"
             "Rewrite the letter fixing these issues."
         )
-    return complete(DRAFT_SYSTEM_PROMPT, user_prompt, max_tokens=1000)
+    return complete(DRAFT_SYSTEM_PROMPT, user_prompt, max_tokens=1500)
 
 
 def critique_cover_letter(letter, job_title, company, job_description,
@@ -85,25 +100,28 @@ def critique_cover_letter(letter, job_title, company, job_description,
             'Return JSON: {"score": <int>, "issues": [<specific actionable strings>], '
             '"unsupported_claims": [<strings>]}'
         )
-    raw = complete(CRITIQUE_SYSTEM_PROMPT, user_prompt, max_tokens=600)
-    try:
-        result = json.loads(raw)
-        if not isinstance(result, dict):
-            raise ValueError("Cover-letter critique must be a JSON object.")
-        result["score"] = int(result.get("score", 0))
-    except (json.JSONDecodeError, ValueError, TypeError) as exc:
-        raise ValueError("The LLM returned an invalid cover-letter critique.") from exc
+    raw = complete(
+        CRITIQUE_SYSTEM_PROMPT,
+        user_prompt,
+        max_tokens=1500,
+        response_format={
+            "type": "json_schema",
+            "json_schema": {
+                "name": "cover_letter_critique",
+                "strict": True,
+                "schema": CoverLetterCritique.model_json_schema(),
+            },
+        },
+    )
+    critique = CoverLetterCritique.model_validate_json(raw)
 
-    issues = result.get("issues", [])
-    unsupported_claims = result.get("unsupported_claims", [])
-    if not isinstance(issues, list) or not isinstance(unsupported_claims, list):
-        raise ValueError("Cover-letter critique issues and unsupported_claims must be lists.")
-
-    result["issues"] = list(issues) + [
-        f"Remove or fix unsupported claim: {c}"
-        for c in unsupported_claims
-    ]
-    return result
+    return {
+        "score": critique.score,
+        "issues": critique.issues + [
+            f"Remove or fix unsupported claim: {claim}"
+            for claim in critique.unsupported_claims
+        ],
+    }
 
 
 def generate_cover_letter_with_critique(summary, job_title, company,
