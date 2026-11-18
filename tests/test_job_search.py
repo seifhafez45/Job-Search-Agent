@@ -39,3 +39,57 @@ def test_remote_detected():
 def test_hybrid_is_not_remote():
     job = make_job(description="Belfast Hybrid, 3 days per week in the office, remote tools")
     assert _looks_remote(job) is False
+
+
+def test_search_matches_returns_and_persists_scored_jobs(monkeypatch):
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import Session
+
+    from app import models  # noqa: F401 - register all mapped models
+    from app.database import Base
+    from app.job_search import router
+    from app.job_search.filters import JobMatchFilters
+    from app.models.job_match import JobMatch
+    from app.models.profile import Profile
+    from app.models.user import User
+
+    engine = create_engine("sqlite://")
+    Base.metadata.create_all(engine)
+
+    monkeypatch.setattr(router, "get_user_memory", lambda db, user_id: object())
+    monkeypatch.setattr(router, "search_jobs", lambda filters: [
+        make_job("AI Engineer", description="Python and machine learning", external_id="42")
+    ])
+    monkeypatch.setattr(
+        router,
+        "compare_profile_to_jobs",
+        lambda memory, jobs: {
+            "42": {
+                "match_score": 91,
+                "matched_skills": ["Python"],
+                "missing_skills": ["Kubernetes"],
+                "fit_summary": "Strong fit.",
+            }
+        },
+    )
+
+    with Session(engine) as db:
+        user = User(email="match@example.com", hashed_password="unused")
+        db.add(user)
+        db.commit()
+        profile = Profile(user_id=user.id, resume_file_path="cv.pdf", headline="AI Engineer")
+        db.add(profile)
+        db.commit()
+
+        results = router.search_matches(
+            filters=JobMatchFilters(keyword="AI Engineer"),
+            db=db,
+            user=user,
+        )
+
+        saved = db.query(JobMatch).filter_by(user_id=user.id).one()
+        assert len(results) == 1
+        assert results[0].match_score == 91
+        assert results[0].match_record_id == saved.id
+        assert saved.match_score == 91
+        assert saved.title == "AI Engineer"
