@@ -1,0 +1,151 @@
+:root {
+  --bg: #f5f6fa;
+  --card: #ffffff;
+  --text: #1f2430;
+  --muted: #6b7280;
+  --primary: #3b5bdb;
+  --primary-dark: #2f49ad;
+  --border: #e2e4ea;
+  --success: #2f9e44;
+  --danger: #e03131;
+  --radius: 10px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  padding: 12px 20px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+nav a {
+  padding: 6px 12px;
+  border-radius: 6px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+nav a.active, nav a:hover { background: var(--bg); color: var(--primary); }
+
+nav .spacer { flex: 1; }
+
+nav .user-email { font-size: 13px; color: var(--muted); margin-right: 10px; }
+
+main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+}
+
+h1 { font-size: 22px; margin-bottom: 4px; }
+.subtitle { color: var(--muted); margin-top: 0; margin-bottom: 20px; font-size: 14px; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 18px;
+}
+
+label { display: block; font-size: 13px; font-weight: 600; margin: 10px 0 4px; }
+label:first-child { margin-top: 0; }
+
+input[type=text], input[type=email], input[type=password], input[type=number],
+textarea, select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #fff;
+}
+
+textarea { min-height: 90px; resize: vertical; }
+
+.row { display: flex; gap: 12px; }
+.row > * { flex: 1; }
+
+.checkbox-row { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
+.checkbox-row input { width: auto; }
+.checkbox-row label { margin: 0; }
+
+button {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 9px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 14px;
+}
+button:hover { background: var(--primary-dark); }
+button.secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+button.secondary:hover { background: #e9ebf2; }
+button.danger { background: var(--danger); }
+button:disabled { opacity: 0.6; cursor: default; }
+
+.msg { margin-top: 12px; padding: 10px 12px; border-radius: 6px; font-size: 14px; white-space: pre-wrap; }
+.msg.error { background: #fff0f0; color: var(--danger); border: 1px solid #ffc9c9; }
+.msg.success { background: #ebfbee; color: var(--success); border: 1px solid #b2f2bb; }
+.msg.info { background: #eef1ff; color: var(--primary-dark); border: 1px solid #c3cbf7; }
+
+.result-box {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: var(--bg);
+  border-radius: 6px;
+  font-size: 14px;
+  white-space: pre-wrap;
+}
+
+.pill {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #eef1ff;
+  color: var(--primary-dark);
+  text-transform: capitalize;
+}
+
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--border); }
+th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; }
+
+.job-card, .resource-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-top: 10px;
+}
+.job-card h3, .resource-card h3 { margin: 0 0 4px; font-size: 15px; }
+.job-card .meta { color: var(--muted); font-size: 13px; margin-bottom: 6px; }
+.job-card a, .resource-card a { color: var(--primary); font-size: 13px; }
+
+.hidden { display: none !important; }
+
+.empty-state { color: var(--muted); font-size: 14px; padding: 10px 0; }
+
+.inline-actions { display: flex; gap: 8px; align-items: center; }
+.inline-actions select, .inline-actions button { margin-top: 0; }

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cover Letter — Job Search Agent</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav id="nav"></nav>
+  <main>
+    <h1>Cover Letter Generator</h1>
+    <p class="subtitle">
+      Generates a cover letter for one of your tracked applications, researching the
+      company and critiquing its own draft before returning it. Add the application
+      on the <a href="applications.html">Applications</a> page first, and use its ID below.
+    </p>
+
+    <div class="card">
+      <form id="generate-form">
+        <label for="application-id">Application ID</label>
+        <input type="number" id="application-id" required min="1" />
+
+        <label for="job-description">Job description</label>
+        <textarea id="job-description" placeholder="Paste the job description here…" required></textarea>
+
+        <button type="submit" id="submit-btn">Generate Cover Letter</button>
+      </form>
+      <p class="subtitle" style="margin-top:8px;">This calls a real LLM and a web search — it can take 10–30 seconds.</p>
+      <div id="msg" class="msg hidden"></div>
+    </div>
+
+    <div id="result-card" class="card hidden">
+      <h3 style="margin-top:0;">Cover Letter</h3>
+      <div id="result" class="result-box"></div>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/tailoring.js"></script>
+</body>
+</html>

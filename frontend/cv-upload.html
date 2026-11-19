@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CV Upload — Job Search Agent</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav id="nav"></nav>
+  <main>
+    <h1>CV Upload</h1>
+    <p class="subtitle">Upload a resume (PDF or DOCX). It gets parsed into a structured profile.</p>
+
+    <div class="card">
+      <form id="upload-form">
+        <label for="file">Resume file</label>
+        <input type="file" id="file" accept=".pdf,.docx" required />
+        <button type="submit" id="submit-btn">Upload &amp; Extract</button>
+      </form>
+      <div id="msg" class="msg hidden"></div>
+    </div>
+
+    <div id="result-card" class="card hidden">
+      <h3 style="margin-top:0;">Extracted Profile</h3>
+      <div id="result" class="result-box"></div>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/cv-upload.js"></script>
+</body>
+</html>

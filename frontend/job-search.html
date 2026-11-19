@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Job Search — Job Search Agent</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav id="nav"></nav>
+  <main>
+    <h1>Job Search</h1>
+    <p class="subtitle">Search real job postings (via the Adzuna API).</p>
+
+    <div class="card">
+      <form id="search-form">
+        <label for="keyword">Keyword *</label>
+        <input type="text" id="keyword" placeholder="e.g. backend developer" required minlength="2" />
+
+        <div class="row">
+          <div>
+            <label for="location">Location</label>
+            <input type="text" id="location" placeholder="e.g. London" />
+          </div>
+          <div>
+            <label for="country">Country code</label>
+            <input type="text" id="country" value="gb" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="date-posted">Posted within (days)</label>
+            <input type="number" id="date-posted" min="1" max="90" placeholder="e.g. 7" />
+          </div>
+          <div>
+            <label for="results-per-page">Results per page</label>
+            <input type="number" id="results-per-page" value="20" min="1" max="50" />
+          </div>
+        </div>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="remote" />
+          <label for="remote">Remote only</label>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="full-time" />
+          <label for="full-time">Full-time only</label>
+        </div>
+
+        <button type="submit" id="submit-btn">Search</button>
+      </form>
+      <div id="msg" class="msg hidden"></div>
+    </div>
+
+    <div id="results"></div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/job-search.js"></script>
+</body>
+</html>

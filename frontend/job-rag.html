@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Semantic Job Search — Job Search Agent</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav id="nav"></nav>
+  <main>
+    <h1>Semantic Job Search</h1>
+    <p class="subtitle">Describe what you're looking for in plain language — this matches by meaning, not exact keywords.</p>
+
+    <div class="card">
+      <form id="search-form">
+        <label for="query">What are you looking for?</label>
+        <textarea id="query" placeholder="e.g. a remote junior role working with Python and APIs" required></textarea>
+        <button type="submit" id="submit-btn">Search</button>
+      </form>
+      <div id="msg" class="msg hidden"></div>
+    </div>
+
+    <div id="results"></div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/job-rag.js"></script>
+</body>
+</html>

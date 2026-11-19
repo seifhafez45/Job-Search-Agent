@@ -3,6 +3,7 @@ App entrypoint. ONLY job: create the FastAPI app, mount each feature router,
 wire startup/shutdown hooks. No business logic lives here.
 """
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.common.logging_config import configure_logging
 from app.auth.router import router as auth_router
@@ -18,6 +19,15 @@ from app.application_tracker.router import router as tracker_router
 configure_logging()
 
 app = FastAPI(title="Personal Job Search & Application Agent")
+
+# Allows the plain-HTML frontend (served from a different local port) to call
+# this API from the browser. Dev-only: wide open, no cookies/credentials used.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(cv_router, prefix="/cv", tags=["cv-extraction"])

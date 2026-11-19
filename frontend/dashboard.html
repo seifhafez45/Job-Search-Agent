@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Job Search Agent</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav id="nav"></nav>
+  <main>
+    <h1>Dashboard</h1>
+    <p class="subtitle">Pick a feature to try.</p>
+
+    <div class="card">
+      <h3 style="margin-top:0;">CV Upload</h3>
+      <p class="subtitle" style="margin-bottom:8px;">Upload a resume and extract a structured profile from it.</p>
+      <a href="cv-upload.html"><button>Open</button></a>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Job Search</h3>
+      <p class="subtitle" style="margin-bottom:8px;">Search real job postings by keyword and filters.</p>
+      <a href="job-search.html"><button>Open</button></a>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Semantic Job Search</h3>
+      <p class="subtitle" style="margin-bottom:8px;">Search jobs by meaning, not just keyword matching.</p>
+      <a href="job-rag.html"><button>Open</button></a>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Skill Gap Analysis</h3>
+      <p class="subtitle" style="margin-bottom:8px;">Compare your profile against a job description.</p>
+      <a href="skill-gap.html"><button>Open</button></a>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Application Tracker</h3>
+      <p class="subtitle" style="margin-bottom:8px;">Track jobs you've applied to and their status.</p>
+      <a href="applications.html"><button>Open</button></a>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Cover Letter Generator</h3>
+      <p class="subtitle" style="margin-bottom:8px;">Generate a tailored cover letter for a tracked application.</p>
+      <a href="tailoring.html"><button>Open</button></a>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Career Resources Q&amp;A (RAG)</h3>
+      <p class="subtitle" style="margin-bottom:8px;">Ask a study question, get an answer grounded in real sources.</p>
+      <a href="career-rag.html"><button>Open</button></a>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Interview Prep Agent</h3>
+      <p class="subtitle" style="margin-bottom:8px;">Get a personalized study plan and practice mock interview questions.</p>
+      <a href="interview-agent.html"><button>Open</button></a>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script>
+    requireAuth();
+    renderNav();
+  </script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interview Prep — Job Search Agent</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav id="nav"></nav>
+  <main>
+    <h1>Interview Prep Agent</h1>
+    <p class="subtitle">Get a personalized day-by-day plan, then practice mock interview questions with live scoring.</p>
+
+    <div class="card" id="start-card">
+      <h3 style="margin-top:0;">Start a new plan</h3>
+      <form id="start-form">
+        <label for="target-role">Target role</label>
+        <input type="text" id="target-role" placeholder="e.g. backend developer" required />
+        <label for="days">Number of days</label>
+        <input type="number" id="days" value="3" min="1" max="14" />
+        <button type="submit" id="start-btn">Start Plan</button>
+      </form>
+      <p class="subtitle" style="margin-top:8px;">Starting a new plan replaces the one currently in progress below.</p>
+      <div id="start-msg" class="msg hidden"></div>
+    </div>
+
+    <div class="card hidden" id="plan-card">
+      <h3 style="margin-top:0;">Your Plan — Session #<span id="session-id"></span></h3>
+      <div id="plan-days"></div>
+    </div>
+
+    <div class="card hidden" id="practice-card">
+      <h3 style="margin-top:0;">Practice — Day <span id="current-day"></span>: <span id="current-topic"></span></h3>
+
+      <button id="next-question-btn" class="secondary">Get Next Question</button>
+      <button id="resources-btn" class="secondary">Show Study Resources</button>
+
+      <div id="question-box" class="result-box hidden" style="margin-top:14px;"></div>
+
+      <form id="answer-form" class="hidden" style="margin-top:14px;">
+        <label for="answer">Your answer</label>
+        <textarea id="answer" required></textarea>
+        <button type="submit" id="submit-answer-btn">Submit Answer</button>
+      </form>
+
+      <div id="feedback-box" class="hidden" style="margin-top:14px;">
+        <h3>Feedback</h3>
+        <p><strong>Score:</strong> <span id="score"></span>/10 &nbsp; <span class="pill" id="next-action"></span></p>
+        <div id="feedback-text" class="result-box"></div>
+      </div>
+
+      <div id="resources-box" class="hidden" style="margin-top:14px;">
+        <h3>Study Resources</h3>
+        <div id="resources-list"></div>
+      </div>
+
+      <div id="completed-box" class="msg success hidden" style="margin-top:14px;">
+        🎉 Plan completed — you've finished every day!
+      </div>
+
+      <div id="practice-msg" class="msg hidden" style="margin-top:14px;"></div>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/interview-agent.js"></script>
+</body>
+</html>

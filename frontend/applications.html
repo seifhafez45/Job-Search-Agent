@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Applications — Job Search Agent</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav id="nav"></nav>
+  <main>
+    <h1>Application Tracker</h1>
+    <p class="subtitle">Track jobs you've saved or applied to. The application's ID shown here is what the Cover Letter page needs.</p>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Add an application</h3>
+      <form id="create-form">
+        <div class="row">
+          <div>
+            <label for="job-title">Job title</label>
+            <input type="text" id="job-title" required />
+          </div>
+          <div>
+            <label for="company">Company</label>
+            <input type="text" id="company" required />
+          </div>
+        </div>
+        <label for="job-url">Job URL (optional)</label>
+        <input type="text" id="job-url" placeholder="https://…" />
+        <label for="status">Status</label>
+        <select id="status">
+          <option value="saved">saved</option>
+          <option value="applied">applied</option>
+          <option value="interviewing">interviewing</option>
+          <option value="offer">offer</option>
+          <option value="rejected">rejected</option>
+        </select>
+        <button type="submit" id="create-btn">Add</button>
+      </form>
+      <div id="create-msg" class="msg hidden"></div>
+    </div>
+
+    <div class="card">
+      <div class="inline-actions" style="margin-bottom: 8px;">
+        <label for="filter" style="margin:0;">Filter by status:</label>
+        <select id="filter">
+          <option value="">All</option>
+          <option value="saved">saved</option>
+          <option value="applied">applied</option>
+          <option value="interviewing">interviewing</option>
+          <option value="offer">offer</option>
+          <option value="rejected">rejected</option>
+        </select>
+        <button id="refresh-btn" class="secondary" style="margin-top:0;">Refresh</button>
+        <button id="stale-btn" class="secondary" style="margin-top:0;">Show stale only</button>
+      </div>
+      <div id="list-msg" class="msg hidden"></div>
+      <table id="table" class="hidden">
+        <thead>
+          <tr><th>Job</th><th>Company</th><th>Status</th><th>Applied</th><th>Actions</th></tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/applications.js"></script>
+</body>
+</html>
