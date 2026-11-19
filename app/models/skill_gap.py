@@ -14,6 +14,7 @@ class SkillGapReport(Base):
     job_description_snapshot = Column(Text)  # posting text at time of analysis
     matched_skills = Column(Text)  # JSON-encoded list
     missing_skills = Column(Text)  # JSON-encoded list
+    match_score = Column(Integer, nullable=True)
     fit_summary = Column(Text)  # LLM's qualitative verdict
     created_at = Column(DateTime, server_default=func.now())
 

@@ -109,9 +109,25 @@ API docs are auto-generated at `http://localhost:8000/docs`.
 2. **Core pipeline** — `cv_extraction/` → `memory/`
 3. **Structured search** — `job_search/`
 4. **Skill-gap + tailoring** — `skill_gap/`, `tailoring/`
+
 5. **Career-resource RAG** — `career_rag/`
 6. **Interview-prep Agent** — `interview_agent/` (depends on 2, 4, 5)
 7. **Stretch** — `job_rag/`, `application_tracker/reminders.py`, market-insight summaries
+
+## CV-based job matching
+
+Upload a CV with `POST /cv/upload`, then call the authenticated
+`GET /jobs/matches` endpoint. It can infer the search keyword from the CV
+headline (or its skills) and location from the CV; provide `keyword` or
+`location` query parameters to override them. Other filters match `GET /jobs/search`
+(for example, `country=gb`). Results include
+`match_score` (0-100), `strengths` (matched skills), `weaknesses` (missing
+skills), and a short `fit_summary`, and are sorted by score.
+
+Match results are saved per user in `job_matches`; each response includes
+`match_record_id`. Retrieve previous results with `GET /jobs/matches/history`.
+Manual skill-gap analyses also persist their score and can be retrieved with
+`GET /skill-gap/history`. Apply database changes with `alembic upgrade head`.
 
 ## Running tests
 

@@ -21,6 +21,18 @@ class JobSearchFilters(BaseModel):
     results_per_page: int = Field(20, ge=1, le=50)
 
 
+class JobMatchFilters(BaseModel):
+    """Search options for CV matching; keyword/location can come from the CV."""
+    keyword: str | None = Field(None, min_length=2)
+    location: str | None = None
+    remote: bool = False
+    date_posted: int | None = Field(None, ge=1, le=90)
+    country: str = "gb"
+    full_time: bool | None = None
+    page: int = Field(1, ge=1)
+    results_per_page: int = Field(20, ge=1, le=50)
+
+
 def _looks_remote(job: JobPosting) -> bool:
     text = f"{job.title} {job.description}".lower()
     if any(h in text for h in NOT_REMOTE_HINTS):

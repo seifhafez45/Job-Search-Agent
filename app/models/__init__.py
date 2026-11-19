@@ -6,4 +6,5 @@ from app.models.user import User
 from app.models.profile import Profile, WorkExperience, Education, Skill
 from app.models.application import Application
 from app.models.skill_gap import SkillGapReport
+from app.models.job_match import JobMatch
 from app.models.practice_session import PracticeSession, PracticeAnswer
