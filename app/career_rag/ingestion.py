@@ -12,11 +12,42 @@ COLLECTION_NAME = "career_resources"
 
 
 def _chunk_text(text: str, chunk_size: int = 800, overlap: int = 100) -> list[str]:
-    chunks = []
-    start = 0
-    while start < len(text):
-        chunks.append(text[start:start + chunk_size])
-        start += chunk_size - overlap
+    """Packs whole words into ~chunk_size-character chunks (never splitting a
+    word in half), carrying the trailing ~overlap characters' worth of words
+    into the next chunk so retrieved excerpts don't start/end mid-word."""
+    words = text.split()
+    chunks: list[str] = []
+    current: list[str] = []
+    current_len = 0
+
+    for word in words:
+        # A "word" with no whitespace of its own (a long URL, an unbroken
+        # token) can still exceed chunk_size; word-boundary splitting can't
+        # help there, so fall back to a raw character slice for it alone.
+        if len(word) > chunk_size:
+            if current:
+                chunks.append(" ".join(current))
+                current, current_len = [], 0
+            for i in range(0, len(word), chunk_size):
+                chunks.append(word[i:i + chunk_size])
+            continue
+
+        added_len = len(word) + (1 if current else 0)
+        if current and current_len + added_len > chunk_size:
+            chunks.append(" ".join(current))
+            carry: list[str] = []
+            carry_len = 0
+            for w in reversed(current):
+                if carry_len + len(w) + 1 > overlap:
+                    break
+                carry.insert(0, w)
+                carry_len += len(w) + 1
+            current, current_len = carry, carry_len
+        current.append(word)
+        current_len += added_len
+
+    if current:
+        chunks.append(" ".join(current))
     return chunks
 
 

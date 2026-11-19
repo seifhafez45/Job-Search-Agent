@@ -9,23 +9,42 @@ def test_chunk_text_shorter_than_chunk_size_returns_one_chunk():
     assert chunks == [text]
 
 
-def test_chunk_text_respects_overlap():
-    text = "a" * 1000
+def test_chunk_text_never_splits_a_word():
+    text = " ".join(f"word{i}" for i in range(300))  # realistic, space-separated
+    chunks = _chunk_text(text, chunk_size=120, overlap=20)
+    assert len(chunks) > 1
+    original_words = set(text.split())
+    for chunk in chunks:
+        assert len(chunk) <= 120
+        for word in chunk.split():
+            assert word in original_words  # never a fragment of a word
+
+
+def test_chunk_text_overlap_repeats_trailing_words():
+    text = " ".join(f"word{i}" for i in range(300))
+    chunks = _chunk_text(text, chunk_size=120, overlap=20)
+    for prev_chunk, next_chunk in zip(chunks, chunks[1:]):
+        prev_words = prev_chunk.split()
+        next_words = next_chunk.split()
+        # overlap can carry more than one trailing word depending on word
+        # lengths, so check the next chunk starts with one of the previous
+        # chunk's trailing words, not an exact single-word handoff.
+        assert next_words[0] in prev_words[-5:]
+
+
+def test_chunk_text_covers_every_word_at_least_once():
+    text = " ".join(f"word{i}" for i in range(300))
+    chunks = _chunk_text(text, chunk_size=120, overlap=20)
+    seen = {word for chunk in chunks for word in chunk.split()}
+    assert set(text.split()) <= seen
+
+
+def test_chunk_text_handles_a_single_unbroken_token_longer_than_chunk_size():
+    text = "x" * 1000  # no spaces at all, e.g. a long URL
     chunks = _chunk_text(text, chunk_size=800, overlap=100)
     assert len(chunks) == 2
-    assert chunks[0] == text[0:800]
-    assert chunks[1] == text[700:1000]
-
-
-def test_chunk_text_covers_full_text_with_no_gaps():
-    text = "0123456789" * 50  # 500 chars
-    chunk_size, overlap = 120, 20
-    chunks = _chunk_text(text, chunk_size=chunk_size, overlap=overlap)
-    step = chunk_size - overlap
-    for i, chunk in enumerate(chunks):
-        start = i * step
-        assert chunk == text[start:start + chunk_size]
-    assert chunks[-1] != ""
+    assert all(len(c) <= 800 for c in chunks)
+    assert "".join(chunks) == text  # no overlap applies to an unsplittable token; just covers it
 
 
 def test_retrieve_relevant_chunks_returns_documents(monkeypatch):

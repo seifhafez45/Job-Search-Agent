@@ -19,7 +19,12 @@ HEADERS = {
 def scrape_page(url: str) -> str:
     resp = requests.get(url, timeout=10, headers=HEADERS)
     resp.raise_for_status()
-    soup = BeautifulSoup(resp.text, "html.parser")
+    # resp.content (raw bytes) instead of resp.text: many sites only declare
+    # their charset inside the HTML <meta> tag, not the HTTP header, which
+    # makes requests' encoding guess wrong and garbles non-ASCII characters
+    # (e.g. a non-breaking space becoming "Â "). BeautifulSoup detects
+    # encoding from the bytes/meta tags itself, far more reliably.
+    soup = BeautifulSoup(resp.content, "html.parser")
     for tag in soup(["script", "style", "nav", "footer"]):
         tag.decompose()
     return soup.get_text(separator="\n", strip=True)
