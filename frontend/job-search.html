@@ -17,27 +17,8 @@
         <label for="keyword">Keyword *</label>
         <input type="text" id="keyword" placeholder="e.g. backend developer" required minlength="2" />
 
-        <div class="row">
-          <div>
-            <label for="location">Location</label>
-            <input type="text" id="location" placeholder="e.g. London" />
-          </div>
-          <div>
-            <label for="country">Country code</label>
-            <input type="text" id="country" value="gb" />
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label for="date-posted">Posted within (days)</label>
-            <input type="number" id="date-posted" min="1" max="90" placeholder="e.g. 7" />
-          </div>
-          <div>
-            <label for="results-per-page">Results per page</label>
-            <input type="number" id="results-per-page" value="20" min="1" max="50" />
-          </div>
-        </div>
+        <label for="location">Location</label>
+        <input type="text" id="location" placeholder="e.g. London" />
 
         <div class="checkbox-row">
           <input type="checkbox" id="remote" />
@@ -47,6 +28,27 @@
           <input type="checkbox" id="full-time" />
           <label for="full-time">Full-time only</label>
         </div>
+
+        <details style="margin-top: 14px;">
+          <summary style="cursor: pointer; font-size: 13px; font-weight: 600; color: var(--muted);">
+            Advanced filters
+          </summary>
+          <div class="row" style="margin-top: 10px;">
+            <div>
+              <label for="country">Country code</label>
+              <input type="text" id="country" value="gb" />
+              <p class="subtitle" style="margin: 4px 0 0; font-size: 12px;">
+                Which country's job market to search (e.g. gb, us, fr) — not supported for every country.
+              </p>
+            </div>
+            <div>
+              <label for="results-per-page">Results per page</label>
+              <input type="number" id="results-per-page" value="20" min="1" max="50" />
+            </div>
+          </div>
+          <label for="date-posted">Posted within (days)</label>
+          <input type="number" id="date-posted" min="1" max="90" placeholder="leave blank for any time" />
+        </details>
 
         <button type="submit" id="submit-btn">Search</button>
       </form>
