@@ -18,7 +18,7 @@ _client = Groq(api_key=settings.groq_api_key)
 def complete(system_prompt: str, user_prompt: str, max_tokens: int = 1500) -> str:
     """Single-turn completion. Returns plain text. Raises after 3 failed retries."""
     response = _client.chat.completions.create(
-        model=settings.groq_model,
+        model=settings.groq_model or settings.llm_model,
         max_tokens=max_tokens,
         messages=[
             {"role": "system", "content": system_prompt},
