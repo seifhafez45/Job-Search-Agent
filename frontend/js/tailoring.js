@@ -21,7 +21,7 @@ document.getElementById("generate-form").addEventListener("submit", async (e) =>
       method: "POST",
       body: { application_id, job_description },
     });
-    resultEl.textContent = data.cover_letter;
+    renderMarkdown(resultEl, data.cover_letter);
     resultCard.classList.remove("hidden");
   } catch (err) {
     showMsg(msgEl, err.message, "error");

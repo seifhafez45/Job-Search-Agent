@@ -114,3 +114,11 @@ function showMsg(el, text, type = "info") {
 function hideMsg(el) {
   el.classList.add("hidden");
 }
+
+/* LLM responses come back as Markdown (bold, tables, lists). Pages that
+   display them call this instead of setting .textContent, so it renders
+   properly instead of showing literal "**" and "|" characters. Requires
+   the marked.js <script> tag to already be on the page. */
+function renderMarkdown(el, text) {
+  el.innerHTML = marked.parse(text || "");
+}

@@ -31,7 +31,7 @@ document.getElementById("analyze-form").addEventListener("submit", async (e) => 
 
     renderPills(document.getElementById("matched"), report.matched_skills);
     renderPills(document.getElementById("missing"), report.missing_skills);
-    document.getElementById("fit-summary").textContent = report.fit_summary;
+    renderMarkdown(document.getElementById("fit-summary"), report.fit_summary);
     resultCard.classList.remove("hidden");
   } catch (err) {
     showMsg(msgEl, err.message, "error");

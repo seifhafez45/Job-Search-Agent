@@ -118,6 +118,19 @@ button:disabled { opacity: 0.6; cursor: default; }
   white-space: pre-wrap;
 }
 
+/* Rendered Markdown (from an LLM response) inside a .result-box */
+.result-box p { margin: 0 0 10px; white-space: normal; }
+.result-box p:last-child { margin-bottom: 0; }
+.result-box ul, .result-box ol { margin: 0 0 10px; padding-left: 20px; white-space: normal; }
+.result-box li { margin-bottom: 4px; }
+.result-box strong { font-weight: 700; }
+.result-box h1, .result-box h2, .result-box h3 { font-size: 15px; margin: 14px 0 6px; }
+.result-box h1:first-child, .result-box h2:first-child, .result-box h3:first-child { margin-top: 0; }
+.result-box code { background: #fff; padding: 1px 5px; border-radius: 4px; font-size: 13px; }
+.result-box table { width: 100%; border-collapse: collapse; margin: 0 0 10px; white-space: normal; }
+.result-box th, .result-box td { border: 1px solid var(--border); padding: 6px 8px; text-align: left; font-size: 13px; }
+.result-box th { background: #fff; }
+
 .pill {
   display: inline-block;
   padding: 2px 9px;

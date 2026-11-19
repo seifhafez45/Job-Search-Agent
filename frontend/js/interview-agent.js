@@ -116,7 +116,7 @@ document.getElementById("next-question-btn").addEventListener("click", async () 
   try {
     const data = await api(`/interview-prep/${session.id}/next-question`);
     currentQuestion = data.question;
-    questionBox.textContent = data.question;
+    renderMarkdown(questionBox, data.question);
     questionBox.classList.remove("hidden");
     answerForm.classList.remove("hidden");
     feedbackBox.classList.add("hidden");
@@ -151,7 +151,7 @@ document.getElementById("answer-form").addEventListener("submit", async (e) => {
 
     document.getElementById("score").textContent = result.score;
     document.getElementById("next-action").textContent = result.next_action;
-    document.getElementById("feedback-text").textContent = result.feedback;
+    renderMarkdown(document.getElementById("feedback-text"), result.feedback);
     feedbackBox.classList.remove("hidden");
     answerForm.classList.add("hidden");
 

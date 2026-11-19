@@ -18,7 +18,7 @@ document.getElementById("ask-form").addEventListener("submit", async (e) => {
 
   try {
     const data = await api(`/career-resources/ask?${new URLSearchParams({ question })}`);
-    answerEl.textContent = data.answer;
+    renderMarkdown(answerEl, data.answer);
     sourcesEl.textContent = `Grounded in ${data.sources_used} retrieved source chunk(s).`;
     resultCard.classList.remove("hidden");
   } catch (err) {
